@@ -1,6 +1,7 @@
 *{
-    margin:0;
     padding:0;
+    margin:0;
+    background-repeat: no-repeat;
 }
 .hide{
     display:none ;
@@ -20,6 +21,7 @@
     border-right: 8px dashed rgba(209, 160, 35,1);
     border-left: 8px dashed rgba(209, 160, 35,1);
     background: #2a2f30;
+    background-repeat: no-repeat;
     margin:auto;
     position:relative;
     padding:0;
@@ -29,24 +31,31 @@
 .lines{
     width:9px;
     height:90px;
-    background: rgb(228, 228, 228);
+    z-index: 1;
+    background: rgba(228, 228, 228, 0.938);
+    background-repeat: no-repeat;
     position: absolute;
     margin-left: 195px;
+    left: auto;
+    right: auto;
+
 }
 
 .startScreen{
+
     position: absolute;
     background-color: #6252ee;
     left: 50%;
     top: 50%;
+    z-index: 3;
     transform: translate(-50%, -50%);
     color:white;
     z-index:1;
     text-align: center;
-    border: 2px solid #6252ee;
     padding:15px;
     margin:auto;
     width: 50%;
+    background-repeat: no-repeat;
     cursor: pointer;
     font-family: carfont;
     letter-spacing: 5;
@@ -56,6 +65,7 @@
     text-transform: uppercase;
     box-shadow: 0 5px 5px #777;
 
+
 }
 
 .car{
@@ -64,31 +74,35 @@
     background-image: url('truck.png');
     background-size: 50px 100px;
     background-position: center;
+    z-index: 2;
     background-repeat: no-repeat;
     position: absolute;
-    left:50px;
+    left:auto;
+    right: auto;
     bottom: 150px;
+    
 }
 
 .score{
     position: absolute;
     top:15px;
     left:40px;
-    background: crimson;
+    background-image: linear-gradient(to bottom right, rgb(255, 102, 0), white, green);
+    background-repeat: no-repeat;
     width: 300px;
     line-height: 70px;
     text-align: center;
-    color: white;
-    font-size:1.5em;
+    color: rgba(40, 37, 201, 0.959);
+    font-size:1.4em;
     font-family: fantasy;
-    box-shadow: 0 5px 5px #777;
+    box-shadow: 1px 6px 7px rgba(112, 112, 112, 0.829);
     z-index: 2;
 }
 
 .traffic{
     width: 50px;
     height:90px;
-
+    z-index:2;
     background-image: url('red.png');
     background-size: 50px 90px;
     background-position: center;
