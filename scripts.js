@@ -1,32 +1,48 @@
 const score = document.querySelector('.score');
 const startScreen = document.querySelector('.startScreen');
-const gameArea = document.querySelector('.gameArea');
+const playableRegion = document.querySelector('.playableRegion');
 
 startScreen.addEventListener('click', start);
 
 let player = {speed: 5, score:0};
 
-let keys={ArrowUp:false, ArrowDown:false, ArrowRight:false, ArrowLeft:false};
+let keys={Up:false, Down:false, Right:false, Left:false};
 
 document.addEventListener('keydown', keyDown);
 document.addEventListener('keyup', keyUp);
 
 function keyDown(e){
     e.preventDefault();
-    keys[e.key] = true;
+    if(e.key=='w' || e.key=='ArrowUp')
+        keys['Up'] = true;
+    else if(e.key=='s'|| e.key=='ArrowDown')
+        keys['Down'] = true;
+    else if(e.key=='a'|| e.key=='ArrowLeft')
+        keys['Left'] = true;
+    else if(e.key=='d'|| e.key=='ArrowRight')
+        keys['Right'] = true;
     console.log(e.key);
 }
 function keyUp(e){
     e.preventDefault();
-    keys[e.key] = false;
+    if(e.key=='w' || e.key=='ArrowUp')
+        keys['Up'] = false;
+    else if(e.key=='s'|| e.key=='ArrowDown')
+        keys['Down'] = false;
+    else if(e.key=='a'|| e.key=='ArrowLeft')
+        keys['Left'] = false;
+    else if(e.key=='d'|| e.key=='ArrowRight')
+        keys['Right'] = false;
+    console.log(e.key);
 }
 
 function isCollide(a, b){
-    aRect = a.getBoundingClientRect(); //our truck
-    bRect = b.getBoundingClientRect(); // traffic
-    
-    return !((aRect.bottom<bRect.top) || (aRect.top>bRect.bottom) || 
-    (aRect.right<bRect.left) || (aRect.left>bRect.right))
+    truckBound = a.getBoundingClientRect(); //our truck
+    trafficBound = b.getBoundingClientRect(); // traffic
+    console.log("truck "+truckBound);
+    console.log("trafficCar "+trafficBound);
+    return !((truckBound.bottom<trafficBound.top) || (truckBound.top>trafficBound.bottom) || 
+    (truckBound.right<trafficBound.left) || (truckBound.left>trafficBound.right))
 
 }
 
@@ -67,9 +83,8 @@ function moveLines(){
     lines.forEach(function(item){
 
         if(item.y>= 700)
-        {
             item.y -=750;
-        }
+        
         item.y+=player.speed;
         item.style.top = item.y+"px";
     })
@@ -77,16 +92,16 @@ function moveLines(){
 }
 
 function endGame(){
-    console.log("here");
+    console.log("THE END");
     player.start=false;
     startScreen.classList.remove('hide');
-    startScreen.innerHTML = "Game Over <br> Your final score is "+Math.floor(player.score)+"<br>Press here to restart the Game.";
+    startScreen.innerHTML = "Game Over! <br> Total Vaccines delivered = "+Math.floor(player.score)+"<br>Click here to restart the Game.";
     
 }
-function moveEnemy(car){
-    let enemy = document.querySelectorAll('.enemy');
+function moveTrafficCar(car){
+    let traffic = document.querySelectorAll('.traffic');
     
-    enemy.forEach(function(item){
+    traffic.forEach(function(item){
         if(isCollide(car, item)){
             var audio = new Audio('crash.mp3');
             audio.play();
@@ -106,33 +121,12 @@ function moveEnemy(car){
     })
 
 }
-function gamePlay(){
-    let car = document.querySelector('.car');
-    let road = gameArea.getBoundingClientRect();
-
-    if(player.start){
-        moveLines();
-        moveEnemy(car);
-        if(keys.ArrowUp && player.y>road.top+75){player.y-=player.speed;}
-        if(keys.ArrowDown && player.y<road.bottom-75){player.y+=player.speed-2;}
-        if(keys.ArrowLeft && player.x>0){player.x-=player.speed;}
-        if(keys.ArrowRight && player.x<road.width-50){player.x+=player.speed;}
-
-        car.style.top = player.y+"px";
-        car.style.left = player.x+"px";
-        window.requestAnimationFrame(gamePlay);
-        player.score+=0.01;
-        score.innerText = "Vaccines Delivered: "+Math.floor(player.score);
-    }
-
-    
-}
 
 function start(){
     var audio = new Audio('start.mp3');
     audio.play();
     startScreen.classList.add('hide');
-    gameArea.innerHTML="";
+    playableRegion.innerHTML="";
 
     player.start = true;
     player.score = 0;
@@ -145,30 +139,50 @@ function start(){
         roadLine.setAttribute('class', 'lines');
         roadLine.y = x*150;
         roadLine.style.top = roadLine.y +"px";
-        gameArea.appendChild(roadLine);
-        
+        playableRegion.appendChild(roadLine);   
     }
-
-    
 
     let car = document.createElement('div');
     car.setAttribute('class', 'car');
-    gameArea.appendChild(car);
+    playableRegion.appendChild(car);
 
     player.x = car.offsetLeft;
     player.y = car.offsetTop;
 
-
     for(x=0; x<3; x++){
         let enemeyCar = document.createElement('div');
-        enemeyCar.setAttribute('class', 'enemy');
+        enemeyCar.setAttribute('class', 'traffic');
         enemeyCar.y = (x+1)*350*-1;
         enemeyCar.style.top = enemeyCar.y +"px";
         enemeyCar.style.backgroundImage = randomCar();
         enemeyCar.style.left = Math.floor(Math.random()*350)+"px";
 
-        gameArea.appendChild(enemeyCar); 
+        playableRegion.appendChild(enemeyCar); 
     }
 }
+
+function gamePlay(){
+    let car = document.querySelector('.car');
+    let road = playableRegion.getBoundingClientRect();
+
+    if(player.start){
+        moveLines();
+        moveTrafficCar(car);
+        if(keys.Up && player.y>road.top+75){player.y-=player.speed;}
+        if(keys.Down && player.y<road.bottom-75){player.y+=player.speed-2;}
+        if(keys.Left && player.x>0){player.x-=player.speed;}
+        if(keys.Right && player.x<road.width-50){player.x+=player.speed;}
+
+        car.style.top = player.y+"px";
+        car.style.left = player.x+"px";
+        window.requestAnimationFrame(gamePlay);
+        player.score+=0.01;
+        score.innerText = "Vaccines Delivered: "+Math.floor(player.score);
+    }
+
+    
+}
+
+
 
 
