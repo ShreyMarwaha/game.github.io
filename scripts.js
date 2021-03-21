@@ -1,71 +1,119 @@
 const score = document.querySelector('.score');
-const startScreen = document.querySelector('.startScreen');
+const openingScene = document.querySelector('.openingScene');
 const playableRegion = document.querySelector('.playableRegion');
 
-startScreen.addEventListener('click', start);
-
-let truck = {speed: 5, score:0};
-
-let keys={Up:false, Down:false, Right:false, Left:false};
 var horn = new Audio('horn.mp3');
-
 var boost = new Audio('boost.mp3');
 var accelerate = new Audio('accelerate.mp3');
-    
 
+openingScene.addEventListener('click', start);
+
+let boostSpeed = 1;
+let truck = {speed: 5, score:0};
+let keys={Up:false, Down:false, Right:false, Left:false};
+  
 document.addEventListener('keydown', keyDown);
 document.addEventListener('keyup', keyUp);
 
-function keyDown(e){
-    e.preventDefault();
-    if(e.key=='w' || e.key=='ArrowUp'){
-        keys['Up'] = true; 
-        accelerate.play();
-    }
-    else if(e.key=='s'|| e.key=='ArrowDown')
-        keys['Down'] = true;
-    else if(e.key=='a'|| e.key=='ArrowLeft')
-        keys['Left'] = true;
-    else if(e.key=='d'|| e.key=='ArrowRight')
-        keys['Right'] = true;
 
-    else if(e.key=='Shift')
-        boost.play();
+function keyDown(e)
+{
 
-    else if(e.key==' ')
-        horn.play();
-    console.log(e.key);
-}
-function keyUp(e){
     e.preventDefault();
     if(e.key=='w' || e.key=='ArrowUp')
-        keys['Up'] = false;
+    {
+        keys['Up'] = true; 
+        accelerate.play();
+        console.log(e.key);
+    }
     else if(e.key=='s'|| e.key=='ArrowDown')
-        keys['Down'] = false;
+    {
+        keys['Down'] = true;
+        console.log(e.key);
+    }
     else if(e.key=='a'|| e.key=='ArrowLeft')
-        keys['Left'] = false;
+    {
+        keys['Left'] = true;
+        console.log(e.key);
+    }
     else if(e.key=='d'|| e.key=='ArrowRight')
-        keys['Right'] = false;
+    {
+        keys['Right'] = true;
+        console.log(e.key);
+    }
+    else if(e.key=='Shift')
+    {
+        boost.play();
+        console.log(e.key);
+    }
+    else if(e.key==' ')
+    {
+        horn.play();
+        console.log(e.key);
+    }
     
-    console.log(e.key);
 }
 
-function isCollide(a, b){
-    truckBound = a.getBoundingClientRect(); //our truck
+
+function keyUp(e)
+{
+    e.preventDefault();
+    if(e.key=='w' || e.key=='ArrowUp')
+    {
+        keys['Up'] = false;
+        console.log(e.key);
+    }
+    else if(e.key=='s'|| e.key=='ArrowDown')
+    {
+        keys['Down'] = false;
+        console.log(e.key);
+    }
+    else if(e.key=='a'|| e.key=='ArrowLeft')
+    {
+        keys['Left'] = false;
+        console.log(e.key);
+    }
+    else if(e.key=='d'|| e.key=='ArrowRight')
+    {
+        keys['Right'] = false;
+        console.log(e.key);
+    }
+
+}
+
+
+function isCollide(boundObject1, boundObject2)
+{
+
+    trafficBound = boundObject2.getBoundingClientRect(); // traffic
+    // console.log("trafficCar "+trafficBound);
+
+    truckBound = boundObject1.getBoundingClientRect(); //our truck
     // console.log("truck "+truckBound);
 
-    trafficBound = b.getBoundingClientRect(); // traffic
-    // console.log("trafficCar "+trafficBound);
+    var isColliding = checkCollision(truckBound, trafficBound);
     
-    var collision = ((truckBound.right<trafficBound.left) || (truckBound.left>trafficBound.right) || (truckBound.bottom<trafficBound.top) || (truckBound.top>trafficBound.bottom));
-    return !collision;
+    return !isColliding;
 
 }
 
+function checkCollision(truckBound, trafficBound){
+    
+    var collision = ((truckBound.right<trafficBound.left) || (truckBound.left>trafficBound.right) || (truckBound.bottom<trafficBound.top) || (truckBound.top>trafficBound.bottom));
+    
+    return collision;
+
+}
+
+
 function randomCar(){
-    let a = Math.floor(Math.random(8)*10);
+
+    let aa = Math.random(8)*10;
+    let a = Math.floor(aa);
     console.log(a);
-    switch(a) {
+    
+    switch(a) 
+    {
         case 0:
             return "url('taxi.png')"
           break;
@@ -90,77 +138,83 @@ function randomCar(){
         default:
             return "url('red.png')"
       }
-
-    
+  
 }
-function moveLines(){
+
+
+function moveLines()
+{
     let lines = document.querySelectorAll('.lines');
+    // lines.style.background = "rgba(0,0,0,1)"; //gives error
+    lines.forEach(function(pawn)
+    {
+        
+        pawn.y += truck.speed;
+        pawn.style.top = pawn.y+"px";
 
-    lines.forEach(function(item){
-
-        item.y += truck.speed;
-        item.style.top = item.y+"px";
-
-        if(item.y > 699)
-            item.y -= 750;   
+        if(pawn.y > 699)
+            pawn.y -= 750;   
     })
 
 }
 
-function GameOver(){
-    startScreen.classList.remove('hide');
-    startScreen.style.background = "rgba(0,0,0,0) no-repeat right top";
+
+function GameOver()
+{
+    openingScene.classList.remove('hide');
+    openingScene.style.background = "linear-gradient(to bottom right, #6252ee, #1900f8) no-repeat right top";
     
     truck.start=false;
     console.log("THE END");
-    startScreen.innerHTML = "Game Over! <br> Total Vaccines delivered = "+Math.floor(truck.score)+"<br>Click here to restart the Game.";
+    openingScene.innerHTML = "Game Over! <br> Total Vaccines delivered = "+Math.floor(truck.score)+"<br>Click here to restart the Game.";
    
 }
-function moveTrafficCar(car){
+
+
+function moveTrafficCar(car)
+{
     let traffic = document.querySelectorAll('.traffic');
     
-    traffic.forEach(function(item){
+    traffic.forEach(function(pawn){
 
-        item.y+=truck.speed;
-        item.style.top = item.y+"px";
+        pawn.y+=truck.speed;
+        pawn.style.top = pawn.y+"px";
 
-        if(item.y > 749)
+        if(pawn.y > 749)
         {
-            item.y = -300;
-            item.style.backgroundImage = randomCar();
-            item.style.left = Math.floor(Math.random()*350)+"px";
+            pawn.y = -300;
+            pawn.style.backgroundImage = randomCar();
+            pawn.style.left = Math.floor(Math.random()*350)+"px";
         }
 
-        else if(isCollide(car, item)){
+        else if(isCollide(car, pawn))
+        {
             var audio = new Audio('crash.mp3');
             audio.play();
             GameOver();
-        }
-
-        
-        
-        
+        }   
     })
 
 }
 
-function start(){
+
+function start()
+{
     var audio = new Audio('start.mp3');
+    reset();
     audio.play();
-    startScreen.classList.add('hide');
-    playableRegion.innerHTML="";
 
-    truck.start = true;
-    truck.score = 0;
-    window.requestAnimationFrame(gamePlay);
+    var LineCount=0;
+    while(LineCount<6)
+    {
+        LineCount++;
 
-    const h = screen.height;
-    console.log(h);
-    for(x=0; x<5; x++){
         let roadLine = document.createElement('div');
         roadLine.setAttribute('class', 'lines');
-        roadLine.y = x*150;
+
         roadLine.style.top = roadLine.y +"px";
+        roadLine.y = LineCount*150;
+        
         playableRegion.appendChild(roadLine);   
     }
 
@@ -172,29 +226,47 @@ function start(){
     truck.y = car.offsetTop;
 
     var count=0;
-    while(count<4){
+    while(count<5)
+    {
         count++;
-        let enemeyCar = document.createElement('div');
-        enemeyCar.setAttribute('class', 'traffic');
-        enemeyCar.style.top = enemeyCar.y +"px";
-        enemeyCar.style.backgroundImage = randomCar();
-        enemeyCar.y = (-1*count)*350;
-        enemeyCar.style.left = Math.floor(Math.random()*350)+"px";
+        let trafficCar = document.createElement('div');
+        trafficCar.setAttribute('class', 'traffic');
+        trafficCar.style.top = trafficCar.y +"px";
+        trafficCar.style.backgroundImage = randomCar();
+        trafficCar.y = (-1*count)*350;
+        trafficCar.style.left = Math.floor(Math.random()*350)+"px";
 
-        playableRegion.appendChild(enemeyCar); 
+        playableRegion.appendChild(trafficCar); 
     }
+
 }
 
-function gamePlay(){
+
+function reset()
+{
+    openingScene.classList.add('hide');
+    playableRegion.innerHTML="";
+
+    truck.start = true;
+    truck.score = 0;
+    window.requestAnimationFrame(gamePlay);
+
+    const h = screen.height;
+    console.log(h);
+}
+
+
+function gamePlay()
+{
     var scoreIncrement = 0.01;
     let car = document.querySelector('.car');
     let road = playableRegion.getBoundingClientRect();
 
     if(truck.start){
-        moveLines();
         moveTrafficCar(car);
+        moveLines();
         
-        
+         
         if(truck.x<road.width-50 && keys.Right){truck.x+=truck.speed;}
         if(truck.x>0 && keys.Left){truck.x-=truck.speed;}
         if(truck.y<road.bottom-75 && keys.Down){truck.y+=truck.speed-2;}
